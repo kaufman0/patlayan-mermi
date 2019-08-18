@@ -1,10 +1,10 @@
 /*
- *  Patlayan mermi sistemi, chinohead tarafýndan
+ *  Patlayan mermi sistemi, chinohead tarafindan
  *
- *  Özellikler:
- *  - Bu sistem ile ateþ ettiðiniz pozisyonda patlama oluþuyor.
- *  - Patlayan mermi miktarý sað üstte bar yardýmý ile gösteriliyor.
- *  - Yardýmlarý için erorcun ve Vengeance'a teþekkürler.
+ *  Ã–zellikler:
+ *  - Bu sistem ile ateÅŸ ettiÄŸiniz pozisyonda patlama oluÅŸuyor.
+ *  - Patlayan mermi miktarÄ± saÄŸ Ã¼stte bar yardÄ±mÄ± ile gÃ¶steriliyor.
+ *  - YardÄ±mlarÄ± iÃ§in erorcun ve Vengeance'a teÅŸekkÃ¼rler.
 */
 
 #include <a_samp>
@@ -12,11 +12,11 @@
 #include <progress2>    		// https://github.com/Southclaws/progress2
 
 #define EXP_WEAPON		(25)    // https://wiki.sa-mp.com/wiki/Weapons
-#define MAX_BULLET		(5)     // Patlayan mermi miktarý
+#define MAX_BULLET		(5)     // Patlayan mermi miktar?
 
 enum e_BulletData
 {
-    BulletCounter,
+	BulletCounter,
 	BulletLimit[MAX_PLAYERS],
 	BulletStatus[MAX_PLAYERS],
 	PlayerText: BulletText[2],
@@ -26,10 +26,10 @@ new Bullet[MAX_PLAYERS][e_BulletData];
 
 public OnPlayerConnect(playerid)
 {
-    Bullet[playerid][BulletBar] = CreatePlayerProgressBar(playerid, 500.000000, 17.000000, 43.000000, 3.200000, 16711935, 5.0000, 0);
+	Bullet[playerid][BulletBar] = CreatePlayerProgressBar(playerid, 500.000000, 17.000000, 43.000000, 3.200000, 16711935, 5.0000, 0);
 	Bullet[playerid][BulletStatus] = 0;
 	Bullet[playerid][BulletCounter] = 0;
-	
+
 	Bullet[playerid][BulletText][0] = CreatePlayerTextDraw(playerid,500.000000, 7.000000, "PATLAYAN MERMI");
 	PlayerTextDrawBackgroundColor(playerid, Bullet[playerid][BulletText][0], 100);
 	PlayerTextDrawFont(playerid, Bullet[playerid][BulletText][0], 1);
@@ -66,20 +66,18 @@ public OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float:fX, Float:fY
 		if (Bullet[playerid][BulletLimit] <= MAX_BULLET)
 		{
 			Bullet[playerid][BulletLimit]++;
-			
 			CreateExplosion(fX, fY, fZ, 12, 10.0);
-            SetPlayerProgressBarValue(playerid, Bullet[playerid][BulletBar], Bullet[playerid][BulletLimit]);
+			SetPlayerProgressBarValue(playerid, Bullet[playerid][BulletBar], Bullet[playerid][BulletLimit]);
 		}
 		if (Bullet[playerid][BulletLimit] == MAX_BULLET)
 		{
-		    Bullet[playerid][BulletStatus] = 0;
-		    Bullet[playerid][BulletLimit] = 0;
-		    
-		    PlayerTextDrawHide(playerid, Bullet[playerid][BulletText][0]);
-		    PlayerTextDrawHide(playerid, Bullet[playerid][BulletText][1]);
-		    HidePlayerProgressBar(playerid, Bullet[playerid][BulletBar]);
-		    SetPlayerProgressBarValue(playerid, Bullet[playerid][BulletBar], 0);
-		    
+			Bullet[playerid][BulletStatus] = 0;
+			Bullet[playerid][BulletLimit] = 0;
+
+			PlayerTextDrawHide(playerid, Bullet[playerid][BulletText][0]);
+			PlayerTextDrawHide(playerid, Bullet[playerid][BulletText][1]);
+			HidePlayerProgressBar(playerid, Bullet[playerid][BulletBar]);
+			SetPlayerProgressBarValue(playerid, Bullet[playerid][BulletBar], 0);
 			GameTextForPlayer(playerid, "~r~mermi bitti!", 2000, 4);
 		}
 	}
@@ -89,55 +87,52 @@ public OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float:fX, Float:fY
 forward CreateBullet(playerid);
 public CreateBullet(playerid)
 {
-    Bullet[playerid][BulletCounter]--;
-    
-    if (Bullet[playerid][BulletCounter] == 0)
+	Bullet[playerid][BulletCounter]--;
+	if(Bullet[playerid][BulletCounter] == 0)
 	{
 		Bullet[playerid][BulletStatus] = 1;
-		
 		GameTextForPlayer(playerid, "~r~patlayan mermi uretildi!", 2000, 4);
-		
-		for(new i; i < MAX_PLAYERS; i++)
+		for(new i = 0, j = GetPlayerPoolSize(); i <= j; i++)
 		{
-		    PlayerPlaySound(i, 1057, 0.0, 0.0, 0.0);
+			if(!IsPlayerConnected(i)) continue;
+			PlayerPlaySound(i, 1056, 0.0, 0.0, 0.0);
 		}
-		return 0;
-	}
-	else
+		return 1;
+	}else
 	{
-	    new text[7];
-	    format(text, sizeof(text), "~w~%d", Bullet[playerid][BulletCounter]);
-
-		for(new i; i < MAX_PLAYERS; i++)
+		new text[7];
+		format(text, sizeof(text), "~w~%d", Bullet[playerid][BulletCounter]);
+		for(new i = 0, j = GetPlayerPoolSize(); i <= j; i++)
 		{
-		    PlayerPlaySound(i, 1056, 0.0, 0.0, 0.0);
+			if(!IsPlayerConnected(i)) continue;
+			PlayerPlaySound(i, 1056, 0.0, 0.0, 0.0);
 		}
 		GameTextForPlayer(playerid, text, 1110, 4);
 	}
-	SetTimer("CreateBullet", 1000, 0);
-	return 0;
+	SetTimerEx("CreateBullet", 1000, false, "i", playerid);
+	return 1;
 }
 
 CMD:patlayanmermi(playerid)
 {
-	if (Bullet[playerid][BulletStatus] == 0)
+	if(Bullet[playerid][BulletStatus] == 0)
 	{
-		if (GetPlayerWeapon(playerid) == EXP_WEAPON)
+		if(GetPlayerWeapon(playerid) == EXP_WEAPON)
 		{
 			Bullet[playerid][BulletStatus] = 0;
-			
+
 			PlayerTextDrawShow(playerid, Bullet[playerid][BulletText][0]);
 			PlayerTextDrawShow(playerid, Bullet[playerid][BulletText][1]);
-            ShowPlayerProgressBar(playerid, Bullet[playerid][BulletBar]);
+			ShowPlayerProgressBar(playerid, Bullet[playerid][BulletBar]);
 
 			if (Bullet[playerid][BulletCounter] == 0)
 			{
-            	Bullet[playerid][BulletCounter] = 11;
-				SetTimer("CreateBullet", 1000, 0);
+				Bullet[playerid][BulletCounter] = 11;
+				SetTimerEx("CreateBullet", 1000, false, "i", playerid);
 			}
 		}
-		else SendClientMessage(playerid, -1, "[HATA] Patlayan mermi üretebilmek için elinde Shotgun bulundurmalýsýn.");
+		else SendClientMessage(playerid, -1, "[HATA] Patlayan mermi Ã¼retebilmek iÃ§in elinde Shotgun bulundurmalisin.");
 	}
-	else SendClientMessage(playerid, -1, "[HATA] Zaten patlayan mermi üretmiþsin.");
+	else SendClientMessage(playerid, -1, "[HATA] Zaten patlayan mermi Ã¼retmiÅŸsin.");
 	return 1;
 }
