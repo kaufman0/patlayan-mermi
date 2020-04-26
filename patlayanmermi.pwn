@@ -1,18 +1,20 @@
 /*
- *  Patlayan mermi sistemi, chinohead tarafindan
- *
- *  Özellikler:
- *  - Bu sistem ile ateş ettiğiniz pozisyonda patlama oluşuyor.
- *  - Patlayan mermi miktarı sağ üstte bar yardımı ile gösteriliyor.
- *  - Yardımları için erorcun ve Vengeance'a teşekkürler.
+
+    Patlayan Mermi Sistemi, chinohead tarafindan
+
+    Özellikler:
+     - Bu sistem ile ateş ettiğiniz pozisyonda patlama oluşuyor.
+     - Patlayan mermi miktarı sağ üstte bar yardımı ile gösteriliyor.
+     - Yardımları için erorcun'a teşekkür ederim.
+
 */
 
 #include <a_samp>
-#include <zcmd> 				// https://forum.sa-mp.com/showthread.php?t=91354
+#include <zcmd> 			// https://forum.sa-mp.com/showthread.php?t=91354
 #include <progress2>    		// https://github.com/Southclaws/progress2
 
 #define EXP_WEAPON		(25)    // https://wiki.sa-mp.com/wiki/Weapons
-#define MAX_BULLET		(5)     // Patlayan mermi miktar?
+#define MAX_BULLET		(5)     // verilecek patlayan mermi miktarı
 
 enum e_BulletData
 {
@@ -22,14 +24,13 @@ enum e_BulletData
 	PlayerText: BulletText[2],
 	PlayerBar: BulletBar[MAX_PLAYERS]
 };
-new Bullet[MAX_PLAYERS][e_BulletData];
 
+new Bullet[MAX_PLAYERS][e_BulletData];
 public OnPlayerConnect(playerid)
 {
 	Bullet[playerid][BulletBar] = CreatePlayerProgressBar(playerid, 500.000000, 17.000000, 43.000000, 3.200000, 16711935, 5.0000, 0);
 	Bullet[playerid][BulletStatus] = 0;
 	Bullet[playerid][BulletCounter] = 0;
-
 	Bullet[playerid][BulletText][0] = CreatePlayerTextDraw(playerid,500.000000, 7.000000, "PATLAYAN MERMI");
 	PlayerTextDrawBackgroundColor(playerid, Bullet[playerid][BulletText][0], 100);
 	PlayerTextDrawFont(playerid, Bullet[playerid][BulletText][0], 1);
@@ -38,7 +39,6 @@ public OnPlayerConnect(playerid)
 	PlayerTextDrawSetOutline(playerid, Bullet[playerid][BulletText][0], 1);
 	PlayerTextDrawSetProportional(playerid, Bullet[playerid][BulletText][0], 1);
 	PlayerTextDrawSetSelectable(playerid, Bullet[playerid][BulletText][0], 0);
-
 	Bullet[playerid][BulletText][1] = CreatePlayerTextDraw(playerid,488.000000, 4.000000, "ld_grav:flwr");
 	PlayerTextDrawBackgroundColor(playerid, Bullet[playerid][BulletText][1], 100);
 	PlayerTextDrawFont(playerid, Bullet[playerid][BulletText][1], 4);
@@ -73,7 +73,6 @@ public OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float:fX, Float:fY
 		{
 			Bullet[playerid][BulletStatus] = 0;
 			Bullet[playerid][BulletLimit] = 0;
-
 			PlayerTextDrawHide(playerid, Bullet[playerid][BulletText][0]);
 			PlayerTextDrawHide(playerid, Bullet[playerid][BulletText][1]);
 			HidePlayerProgressBar(playerid, Bullet[playerid][BulletBar]);
@@ -120,11 +119,9 @@ CMD:patlayanmermi(playerid)
 		if(GetPlayerWeapon(playerid) == EXP_WEAPON)
 		{
 			Bullet[playerid][BulletStatus] = 0;
-
 			PlayerTextDrawShow(playerid, Bullet[playerid][BulletText][0]);
 			PlayerTextDrawShow(playerid, Bullet[playerid][BulletText][1]);
 			ShowPlayerProgressBar(playerid, Bullet[playerid][BulletBar]);
-
 			if (Bullet[playerid][BulletCounter] == 0)
 			{
 				Bullet[playerid][BulletCounter] = 11;
